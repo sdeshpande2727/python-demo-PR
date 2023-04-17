@@ -25,17 +25,17 @@ jobs:
       run: pip install pybuilder
 
     # Build the project with PyBuilder
-    - name: Build project
-      run: pyb
+#     - name: Build project
+#       run: pyb
 
     # Run unit tests
     - name: Run unit tests
       run: |
-        python -m pytest tests/ --junitxml=xunit.xml
+        python -m pytest src/unittest/python/ --junitxml=xunit.xml
     # Generate coverage report
     - name: Generate coverage report
       run: |
-        coverage run --source=my_module -m pytest tests/
+        coverage run --source=my_module -m pytest src/unittest/python/
         coverage xml -o coverage.xml
   sonarcloud:
     name: SonarCloud
