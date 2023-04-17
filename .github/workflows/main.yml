@@ -10,33 +10,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the code
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.x
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-    # Install PyBuilder
-    - name: Install PyBuilder
-      run: pip install pybuilder
+      # Install PyBuilder
+      - name: Install PyBuilder
+        run: pip install pybuilder
 
-    # Build the project with PyBuilder
-#     - name: Build project
-#       run: pyb
+      # Install pytest
+      - name: Install pytest
+        run: pip install pytest
 
-    # Run unit tests
-    - name: Run unit tests
-      run: |
-        python -m pytest src/unittest/python/ --junitxml=xunit.xml
-    # Generate coverage report
-    - name: Generate coverage report
-      run: |
-        coverage run --source=my_module -m pytest src/unittest/python/
-        coverage xml -o coverage.xml
+      # Run unit tests
+      - name: Run unit tests
+        run: |
+          python -m pytest src/unittest/python/ --junitxml=xunit.xml
+
+      # Generate coverage report
+      - name: Generate coverage report
+        run: |
+          coverage run --source=my_module -m pytest src/unittest/python/
+          coverage xml -o coverage.xml
+
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
