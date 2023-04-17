@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - Master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    # Install PyBuilder
+    - name: Install PyBuilder
+      run: pip install pybuilder
+
+    # Build the project with PyBuilder
+    - name: Build project
+      run: pyb
+
+    # Run unit tests
+    - name: Run unit tests
+      run: |
+        python -m pytest tests/ --junitxml=xunit.xml
+    # Generate coverage report
+    - name: Generate coverage report
+      run: |
+        coverage run --source=my_module -m pytest tests/
+        coverage xml -o coverage.xml
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
