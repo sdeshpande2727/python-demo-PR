@@ -3,7 +3,7 @@ name: Python new CI
 on:
   push:
     branches:
-      - master
+      - Master
 
 permissions:
   id-token: write   # This is required for requesting the JWT
