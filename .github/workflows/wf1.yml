@@ -3,7 +3,7 @@ name: Python new CI
 on:
   push:
     branches:
-      - Master
+      - master
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -13,16 +13,29 @@ jobs:
   python-ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Run Python CI
+        run: echo "Hello from Python CI"
 
   trigger-second-workflow:
     needs: python-ci
     if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger second workflow
-        uses: peter-evans/repository-dispatch@v1
+      - name: Trigger Second Workflow
+        uses: actions/github-script@v4
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: ${{ github.repository }}
-          event-type: second-workflow-event
+          script: |
+            const payload = {
+              event_type: 'second-workflow-event'
+            }
+            const response = await github.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ...payload
+            })
+            console.log(response)
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
