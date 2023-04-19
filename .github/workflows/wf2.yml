@@ -1,0 +1,10 @@
+name: Second Workflow
+on:
+  repository_dispatch:
+    types: [second-workflow-event]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello from Second Workflow!"
