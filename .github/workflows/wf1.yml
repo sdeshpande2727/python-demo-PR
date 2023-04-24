@@ -13,29 +13,37 @@ jobs:
   python-ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-      - name: Run Python CI
-        run: echo "Hello from Python CI"
+      - uses: actions/checkout@v3
 
-  trigger-second-workflow:
-    needs: python-ci
-    if: ${{ success() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Second Workflow
-        uses: actions/github-script@v4
+      - name: Install Python
+        uses: actions/setup-python@v2
         with:
-          script: |
-            const payload = {
-              event_type: 'second-workflow-event'
-            }
-            const response = await github.repos.createDispatchEvent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ...payload
-            })
-            console.log(response)
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+         python-version: 3.12.0-alpha.7 
+         architecture: x64
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Trivy vulnerability scanner
+        run: |
+           sudo apt install wget apt-transport-https gnupg lsb-release
+           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+           echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+           sudo apt update
+           sudo apt install trivy
+           trivy repo https://github.com/Shivaraj600/python-demo.git
+      - name: Get version from file
+        run: |
+          VERSION=$(cat version.txt)
+          echo "Version is $VERSION"
+          echo "::set-output name=version::$VERSION"
+        id: version
+        
+      - name: Zip Python code
+        run: |
+          REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          GIT_COMMIT=$(echo $GITHUB_SHA | cut -c1-7)
+          VERSION=${{ steps.version.outputs.version }}
+          FILE_NAME="$REPO_NAME-$GIT_COMMIT-$VERSION.zip"
+          echo "Creating archive $FILE_NAME"
+          zip -r $FILE_NAME src/main/python/demo.py
