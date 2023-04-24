@@ -46,4 +46,4 @@ jobs:
           VERSION=${{ steps.version.outputs.version }}
           FILE_NAME="$REPO_NAME-$GIT_COMMIT-$VERSION.zip"
           echo "Creating archive $FILE_NAME"
-          zip -r $FILE_NAME src/main/python/demo.py
+          zip -r $FILE_NAME src/main/python/helloworld.py
