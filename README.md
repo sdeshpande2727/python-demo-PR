@@ -3,8 +3,10 @@
 
 #For New REPO
   #!/bin/sh
-
-  pip install pybuilder
+ 
+AKCp1nzfsRR6kH7KJYAcGi8wZytdGuuLvHinbb7qaccuZSHzyQaKtA1Cp7KXw8eNg8iQmUpID
+ 
+ pip install pybuilder
 
   If you want the bleeding edge
   (we release after every commit)
